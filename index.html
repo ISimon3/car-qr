@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正在跳转...</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f2f5; text-align: center; }
+        .container p { font-size: 18px; color: #555; }
+        .loader { border: 4px solid #f3f3f3; border-radius: 50%; border-top: 4px solid #3498db; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p>正在为您跳转到挪车页面，请稍候...</p>
+        <div class="loader"></div>
+    </div>
+
+    <script>
+        // --- 请在这里配置您的地址 ---
+        const primaryUrl = 'https://www.simonius.cn/car/'; // 您的主服务器地址
+        const fallbackUrl = 'https://isimon3.github.io/car-qr/app.html'; // 您的备用GitHub地址 (注意是app.html)
+        const timeout = 3000; // 超时时间，单位毫秒 (3秒)
+        // -------------------------
+
+        function checkAndRedirect() {
+            // 使用Promise.race来处理超时
+            Promise.race([
+                // fetch请求，mode:'no-cors'用于简单探测，不关心返回内容，避免跨域问题
+                fetch(primaryUrl, { mode: 'no-cors' }),
+                // 一个会超时的Promise
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
+            ])
+            .then(() => {
+                // 如果fetch成功，跳转到主地址
+                console.log('主服务器正常，跳转中...');
+                window.location.replace(primaryUrl);
+            })
+            .catch(error => {
+                // 如果fetch失败或超时，跳转到备用地址
+                console.warn('主服务器无响应或超时，错误:', error.message, '跳转到备用地址...');
+                window.location.replace(fallbackUrl);
+            });
+        }
+
+        // 立即执行跳转逻辑
+        checkAndRedirect();
+    </script>
+</body>
+</html>
