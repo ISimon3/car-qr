@@ -16,7 +16,7 @@
 
 ## 🏛️ 系统架构
 
-![系统架构图](https://user-images.githubusercontent.com/your-username/your-repo/your-image-url.png) <!-- 建议您用一个简单的流程图替换这里 -->
+![系统架构图](https://github.com/ISimon3/car-qr/blob/main/Renderingimage.png)
 
 1.  **二维码** 指向一个部署在 GitHub Pages 上的**智能路由页 (`index.html`)**。
 2.  路由页通过JS代码，在3秒内尝试访问**主服务器页面 (`https://www.simonius.cn/car/`)**。
