@@ -1,0 +1,121 @@
+<!-- HTML结构和样式 -->
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap');
+    body {
+        font-family: 'Noto Sans SC', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: 100vh;
+        margin: 0;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    .card {
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 400px;
+        width: 100%;
+    }
+    .car-icon {
+        font-size: 50px;
+    }
+    h1 {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        font-size: 24px;
+        color: #333;
+    }
+    p {
+        color: #666;
+        margin-bottom: 30px;
+    }
+    .button {
+        display: block;
+        width: 100%;
+        padding: 18px 0;
+        font-size: 20px;
+        font-weight: bold;
+        color: white;
+        background-color: #07c160; /* 微信绿 */
+        border: none;
+        border-radius: 10px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+    .button:active {
+        transform: scale(0.98);
+    }
+    .button.disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+    #status {
+        margin-top: 20px;
+        color: #07c160;
+        font-weight: bold;
+        height: 20px; /* 预留空间防止跳动 */
+    }
+</style>
+
+<div class="card">
+    <div class="car-icon">🚗</div>
+    <h1>挪车通知</h1>
+    <p>临时停放，若有不便，请点击下方按钮通知我，我将尽快赶来，谢谢您的理解！</p>
+    <button class="button" id="notifyBtn" onclick="notify()">📣 点击立即通知车主</button>
+    <p id="status"></p>
+</div>
+
+<!-- JavaScript逻辑 -->
+<script>
+    function notify() {
+        // ❗️❗️❗️ 把这里的字符串替换成你自己的 SendKey ❗️❗️❗️
+        const sendKey = 'SCT282739TrNot0KYW5mCvNwYIEgxv2Wai'; // 粘贴你在步骤一获取的SendKey
+
+        const notifyBtn = document.getElementById('notifyBtn');
+        const statusDiv = document.getElementById('status');
+        
+        // 防止重复点击
+        notifyBtn.disabled = true;
+        notifyBtn.classList.add('disabled');
+        notifyBtn.innerText = '正在发送...';
+        
+        // Server酱的API地址
+        const url = `https://sctapi.ftqq.com/${sendKey}.send`;
+        
+        const title = '挪车提醒！';
+        const desp = '有人在您的车旁需要您挪车，请尽快处理！\n\n通知时间：' + new Date().toLocaleString('zh-CN', { hour12: false });
+        
+        // 使用 fetch API 发送POST请求
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `title=${encodeURIComponent(title)}&desp=${encodeURIComponent(desp)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.code === 0) {
+                statusDiv.innerText = '✅ 通知已成功发送！';
+                notifyBtn.innerText = '✅ 发送成功';
+            } else {
+                // 如果失败，让用户可以重试
+                statusDiv.innerText = `❌ 发送失败: ${data.message}`;
+                notifyBtn.disabled = false;
+                notifyBtn.classList.remove('disabled');
+                notifyBtn.innerText = '重新通知车主';
+            }
+        })
+        .catch(error => {
+            statusDiv.innerText = '❌ 网络错误，请检查网络后重试。';
+            notifyBtn.disabled = false;
+            notifyBtn.classList.remove('disabled');
+            notifyBtn.innerText = '重新通知车主';
+        });
+    }
+</script>
